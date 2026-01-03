@@ -1,0 +1,203 @@
+/* =========================
+   UAV DRAWER ROOT
+========================= */
+
+.uav-drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 280px;
+
+  background:
+    linear-gradient(180deg, rgba(18,30,60,0.95), rgba(8,14,30,0.95));
+  backdrop-filter: blur(10px);
+
+  z-index: 6;
+  transition: width 0.35s ease;
+
+  box-shadow:
+    inset -1px 0 0 rgba(255,255,255,0.08),
+    12px 0 30px rgba(0,0,0,0.65);
+}
+
+.uav-drawer.collapsed {
+  width: 48px;
+}
+
+/* =========================
+   TOGGLE
+========================= */
+
+.uav-drawer-toggle {
+  position: absolute;
+  right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 64px;
+
+  background: linear-gradient(180deg, #0e2455, #09162f);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.25);
+  cursor: pointer;
+
+  clip-path: polygon(0% 0%, 100% 10%, 100% 90%, 0% 100%);
+}
+
+/* =========================
+   LIST
+========================= */
+
+.uav-list {
+  padding: 72px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =========================
+   UAV ITEM
+========================= */
+
+.uav-item {
+  position: relative;
+  overflow: hidden;
+
+  height: 42px;
+  background: rgba(0,0,0,0.35);
+  border: 1.5px solid var(--uavColor);
+  color: white;
+  font-family: "Orbitron", system-ui, sans-serif;
+
+  transition:
+    height 0.35s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.uav-item:hover {
+  height: 100px;
+  transform: translateX(4px);
+  box-shadow:
+    0 0 18px rgba(0,0,0,0.85),
+    0 0 16px var(--uavColor);
+}
+
+/* =========================
+   FULL ENERGY FILL
+========================= */
+
+.uav-energy-fill {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      var(--uavColor) 40%,
+      var(--uavColor) 60%,
+      transparent 100%
+    );
+
+  opacity: 0.9;
+  filter: saturate(1.6);
+
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+  z-index: 1;
+  pointer-events: none;
+}
+
+.uav-item:hover .uav-energy-fill {
+  transform: scaleX(1);
+}
+
+/* =========================
+   CONFIRMATION PULSE
+========================= */
+
+.uav-item.confirmed {
+  animation: uav-confirm 0.6s ease-out;
+}
+
+@keyframes uav-confirm {
+  0% {
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  30% {
+    box-shadow:
+      0 0 30px var(--uavColor),
+      inset 0 0 18px var(--uavColor);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+}
+
+/* =========================
+   CONTENT ABOVE FILL
+========================= */
+
+.uav-header,
+.uav-controls {
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.uav-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.uav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--uavColor);
+}
+
+/* =========================
+   CONTROLS
+========================= */
+
+.uav-controls {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 12px;
+
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.uav-item:hover .uav-controls {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.uav-controls button {
+  flex: 1;
+  font-size: 11px;
+  padding: 6px 0;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.45);
+  color: white;
+  cursor: pointer;
+}
+
+.uav-controls button:hover {
+  background: var(--uavColor);
+  color: #000;
+}

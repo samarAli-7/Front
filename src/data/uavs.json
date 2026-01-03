@@ -1,0 +1,22 @@
+[
+  {
+    "id": "UAV-1",
+    "lat": 28.7489,
+    "lng": 77.1172,
+    "yaw": 135,
+    "battery": 82,
+    "alt": 34,
+    "speed": 12.4,
+    "idColor": "#4aa3ff"
+  },
+  {
+    "id": "UAV-2",
+    "lat": 28.7483,
+    "lng": 77.1180,
+    "yaw": 45,
+    "battery": 61,
+    "alt": 28,
+    "speed": 9.1,
+    "idColor": "#ff9f4a"
+  }
+]

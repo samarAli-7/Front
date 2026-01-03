@@ -1,0 +1,20 @@
+[
+  {
+    "id": "UAV-1",
+    "lat": 28.7489,
+    "lng": 77.1172,
+    "yaw": 45,
+    "battery": 78,
+    "status": "active",
+    "idColor": "#4f9cff"
+  },
+  {
+    "id": "UAV-2",
+    "lat": 28.7494,
+    "lng": 77.1165,
+    "yaw": 69,
+    "battery": 42,
+    "status": "idle",
+    "idColor": "#ff9f4f"
+  }
+]

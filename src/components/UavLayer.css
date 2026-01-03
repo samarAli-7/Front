@@ -1,0 +1,74 @@
+.uav-marker {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+
+.uav-rotator {
+  position: absolute;
+  inset: 0;
+
+  transform-origin: 50% 50%;
+  transition: transform 0.15s linear;
+}
+
+/* Central body */
+.uav-body {
+  position: absolute;
+  inset: 12px;
+  background: var(--uavColor);
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.6);
+}
+
+/* Arms */
+.uav-arm {
+  position: absolute;
+  background: var(--uavColor);
+}
+
+.uav-arm.h {
+  top: 19px;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+}
+
+.uav-arm.v {
+  left: 19px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+}
+
+/* Motors */
+.uav-motor {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--uavColor);
+  border-radius: 50%;
+}
+
+.uav-motor.tl { top: 2px; left: 2px; }
+.uav-motor.tr { top: 2px; right: 2px; }
+.uav-motor.bl { bottom: 2px; left: 2px; }
+.uav-motor.br { bottom: 2px; right: 2px; }
+
+/* === HEADING CONE === */
+.heading-cone {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid var(--uavColor);
+
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.6));
+}
