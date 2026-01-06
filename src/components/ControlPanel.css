@@ -1,0 +1,296 @@
+/* =========================
+   CONTROL PANEL BASE
+========================= */
+
+.control-panel {
+  width: calc(100% - 64px);
+  max-width: 1200px;
+  margin: 0 auto;
+
+  /* let variants decide height */
+  height: auto;
+
+  background: linear-gradient(
+    180deg,
+    rgba(18, 30, 60, 0.95),
+    rgba(8, 14, 30, 0.95)
+  );
+
+  border-radius: 16px;
+  border: 1.5px solid rgba(120, 160, 255, 0.25);
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 0 32px rgba(0, 0, 0, 0.85),
+    inset 0 0 20px rgba(120, 160, 255, 0.12);
+
+  overflow: hidden;
+}
+
+/* =========================
+   GLOBAL MODE (ALL UAVs)
+========================= */
+
+.control-panel.global {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  /* compact global bar */
+  min-height: 100px;
+  padding: 12px 22px;
+
+  border-color: #5a7cff;
+}
+
+/* =========================
+   UAV INDICATORS (GLOBAL)
+========================= */
+
+.uav-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.uav-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 6px 12px;
+
+  font-family: "Orbitron", system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: white;
+
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.25);
+
+  cursor: default;
+}
+
+.uav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--uavColor);
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* =========================
+   GLOBAL ACTIONS
+========================= */
+
+.global-actions {
+  display: flex;
+  gap: 18px;
+}
+
+/* =========================
+   ACTION BUTTON BASE
+========================= */
+
+.action-btn {
+  position: relative;
+  overflow: hidden;
+
+  padding: 12px 22px;
+  min-width: 150px;
+
+  font-family: "Orbitron", system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+
+  background: rgba(0,0,0,0.25);
+  color: white;
+
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* =========================
+   ENERGY SWEEP
+========================= */
+
+.action-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255,255,255,0.15) 45%,
+      rgba(255,255,255,0.25) 55%,
+      transparent 100%
+    );
+
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+  pointer-events: none;
+}
+
+/* =========================
+   HOVER EFFECT
+========================= */
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 18px rgba(90,124,255,0.6),
+    inset 0 0 12px rgba(255,255,255,0.1);
+  border-color: #5a7cff;
+}
+
+.action-btn:hover::before {
+  transform: scaleX(1);
+}
+
+/* =========================
+   BUTTON VARIANTS
+========================= */
+
+.action-btn.primary {
+  border-color: #5a7cff;
+}
+
+.action-btn.danger {
+  border-color: #ff5555;
+}
+
+.action-btn.danger:hover {
+  box-shadow:
+    0 0 18px rgba(255,85,85,0.7),
+    inset 0 0 12px rgba(255,255,255,0.1);
+  border-color: #ff5555;
+}
+
+/* =========================
+   ACTIVE UAV MODE (FIXED)
+========================= */
+
+.control-panel.active {
+  display: grid;
+  grid-template-columns:
+    auto
+    auto
+    minmax(220px, 1fr)
+    minmax(220px, 1fr)
+    auto;
+
+  column-gap: 24px;
+  align-items: center;
+
+  /* restore breathing room */
+  min-height: 170px;
+  padding: 18px 28px;
+  grid-auto-rows: minmax(36px, auto);
+
+  border-color: var(--uavColor);
+  box-shadow:
+    0 0 26px var(--uavColor),
+    inset 0 0 18px rgba(255,255,255,0.1);
+}
+
+/* =========================
+   UAV INDICATOR (ACTIVE)
+========================= */
+
+.uav-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  font-family: "Orbitron", system-ui, sans-serif;
+  font-size: 17px;
+  letter-spacing: 2px;
+  color: white;
+}
+
+/* =========================
+   SECTION LABEL
+========================= */
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+}
+
+/* =========================
+   MODE CONTROL
+========================= */
+
+.mode-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.mode-select {
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 10px;
+  font-family: "Orbitron", system-ui, sans-serif;
+}
+
+.mode-set-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1.5px solid;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.mode-set-btn.pending {
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+}
+
+.mode-set-btn.applied {
+  border-color: #4ade80;
+  color: #4ade80;
+}
+
+/* =========================
+   ACTION SECTIONS (ACTIVE UAV)
+========================= */
+
+.action-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.action-btn.ghost {
+  background: transparent;
+  border-color: rgba(255,255,255,0.35);
+  white-space: nowrap;
+}

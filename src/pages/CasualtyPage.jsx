@@ -1,57 +1,72 @@
-// src/pages/CasualtyPage.jsx
-
 import { useState } from "react";
+
 import casualties from "../data/casualty.json";
 import uavs from "../data/uavs.json";
 
 import CasualtyMap from "../components/CasualtyMap";
 import UavDrawer from "../components/UavDrawer";
+import ControlPanel from "../components/ControlPanel";
 
 import "./CasualtyPage.css";
 
 export default function CasualtyPage() {
+  /* ================= CASUALTY UI ================= */
   const [collapsed, setCollapsed] = useState(false);
   const [triageFilter, setTriageFilter] = useState("all");
   const [focusedId, setFocusedId] = useState(null);
 
+  /* ================= UAV UI ================= */
   const [uavCollapsed, setUavCollapsed] = useState(false);
-  const [focusedUavId, setFocusedUavId] = useState(null);
+  const [hoveredUavId, setHoveredUavId] = useState(null);
+  const [lockedUavId, setLockedUavId] = useState(null);
+
+  const hoveredUav =
+    uavs.find((u) => u.id === hoveredUavId) || null;
+
+  const lockedUav =
+    uavs.find((u) => u.id === lockedUavId) || null;
+
+  const activeUav = lockedUav || hoveredUav;
+
+  /* 🔥 RESET TO GLOBAL MODE */
+  const clearUavSelection = () => {
+    setLockedUavId(null);
+    setHoveredUavId(null);
+  };
 
   return (
     <div className="casualty-page">
-
-      {/* ================= MAP LAYER ================= */}
+      {/* ================= MAP ================= */}
       <div className="map-layer">
         <CasualtyMap
           casualties={casualties}
           focusedId={focusedId}
           triageFilter={triageFilter}
           uavs={uavs}
-          focusedUavId={focusedUavId}
+          focusedUavId={activeUav?.id || null}
         />
       </div>
 
-      {/* ================= UI LAYER ================= */}
+      {/* ================= UI ================= */}
       <div className="ui-layer">
-
         {/* UAV DRAWER */}
         <UavDrawer
           uavs={uavs}
           collapsed={uavCollapsed}
           setCollapsed={setUavCollapsed}
-          focusedUavId={focusedUavId}
-          setFocusedUavId={setFocusedUavId}
+          focusedUavId={hoveredUavId}
+          setFocusedUavId={setHoveredUavId}
+          lockedUavId={lockedUavId}
+          setLockedUavId={setLockedUavId}
         />
 
-        {/* CASUALTY UI */}
+        {/* RIGHT CASUALTY UI */}
         <div className={`right-ui ${collapsed ? "collapsed" : ""}`}>
-
-          {/* FILTERS */}
           <div className="triage-filters">
             {["red", "yellow", "green", "black", "all"].map((t) => (
               <button
                 key={t}
-                className={`filter-btn ${t} ${
+                className={`filter-btn ${
                   triageFilter === t ? "active" : ""
                 }`}
                 onClick={() => setTriageFilter(t)}
@@ -61,7 +76,6 @@ export default function CasualtyPage() {
             ))}
           </div>
 
-          {/* DRAWER */}
           <div className="drawer">
             <button
               className="drawer-toggle"
@@ -70,11 +84,12 @@ export default function CasualtyPage() {
               {collapsed ? "‹" : "›"}
             </button>
 
-            {/* CASUALTY LIST */}
             <div className="casualty-list">
               {casualties
                 .filter(
-                  (c) => triageFilter === "all" || c.triage === triageFilter
+                  (c) =>
+                    triageFilter === "all" ||
+                    c.triage === triageFilter
                 )
                 .map((c) => (
                   <button
@@ -90,6 +105,15 @@ export default function CasualtyPage() {
                 ))}
             </div>
           </div>
+        </div>
+
+        {/* ================= CONTROL PANEL ================= */}
+        <div className="bottom-safe-area">
+          <ControlPanel
+            uavs={uavs}
+            activeUav={activeUav}
+            onClearSelection={clearUavSelection}
+          />
         </div>
       </div>
     </div>

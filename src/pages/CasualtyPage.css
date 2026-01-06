@@ -307,6 +307,8 @@
   z-index: 3;
 }
 
+
+
 .casualty-btn .label {
   position: relative;
   z-index: 2;
@@ -359,5 +361,26 @@
 
 /* enable interaction ONLY where needed */
 .ui-layer * {
+  pointer-events: auto;
+}
+
+
+
+/* =========================
+   BOTTOM SAFE AREA
+========================= */
+
+.bottom-safe-area {
+  position: absolute;
+  bottom: 16px;
+
+  left: 320px;   /* UAV drawer */
+  right: 400px;  /* triage + casualty drawer */
+
+  z-index: 1500;
+  pointer-events: none;
+}
+
+.bottom-safe-area > * {
   pointer-events: auto;
 }
