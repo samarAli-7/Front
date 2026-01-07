@@ -8,185 +8,114 @@ mapboxgl.accessToken =
 
 export default function CasualtyMap({
   casualties = [],
-  triageFilter = "all",
   focusedId = null,
+  triageFilter = "all",
 
+  /* UAV support */
   uavs = [],
   focusedUavId = null,
-
-  globalGeofence = [],
-  uavGeofences = {},
-
-  onAddPoint,
 }) {
-  const containerRef = useRef(null);
   const mapRef = useRef(null);
-  const markersRef = useRef({});
-  const sourcesReadyRef = useRef(false);
-  const [ready, setReady] = useState(false);
+  const mapRefInstance = useRef(null);
+  const markers = useRef({});
 
-  /* ================= MAP INIT ================= */
+  const [mapReady, setMapReady] = useState(false);
+
+  /* =========================
+     INIT MAP (SAFE)
+  ========================= */
+
   useEffect(() => {
-    if (mapRef.current || !containerRef.current) return;
+    if (mapRefInstance.current || !mapRef.current) return;
 
     const map = new mapboxgl.Map({
-      container: containerRef.current,
+      container: mapRef.current,
       style: "mapbox://styles/mapbox/dark-v11",
       center: [77.1175, 28.7488],
       zoom: 16,
-      preserveDrawingBuffer: true,
     });
 
-    mapRef.current = map;
+    mapRefInstance.current = map;
 
     map.on("load", () => {
-      setReady(true);
-      map.resize();
+      setMapReady(true);
     });
 
-    map.on("webglcontextlost", (e) => e.preventDefault());
-
     return () => {
-      try {
-        map.remove();
-      } catch {}
-      mapRef.current = null;
-      sourcesReadyRef.current = false;
+      map.remove();
+      mapRefInstance.current = null;
     };
   }, []);
 
-  /* ================= CREATE GEOFENCE SOURCES ONCE ================= */
+  /* =========================
+     CREATE CASUALTY MARKERS
+  ========================= */
+
   useEffect(() => {
-    if (!ready || !mapRef.current || sourcesReadyRef.current) return;
+    if (!mapReady) return;
 
-    const map = mapRef.current;
-
-    if (!map.getSource("global-geofence")) {
-      map.addSource("global-geofence", {
-        type: "geojson",
-        data: emptyFeature(),
-      });
-      addFenceLayers(map, "global-geofence", "#9ca3af");
-    }
-
-    uavs.forEach((uav) => {
-      const id = `uav-geofence-${uav.id}`;
-      if (!map.getSource(id)) {
-        map.addSource(id, {
-          type: "geojson",
-          data: emptyFeature(),
-        });
-        addFenceLayers(map, id, uav.idColor);
-      }
-    });
-
-    sourcesReadyRef.current = true;
-  }, [ready, uavs]);
-
-  /* ================= UPDATE GLOBAL ================= */
-  useEffect(() => {
-    if (!ready || !sourcesReadyRef.current || !mapRef.current) return;
-
-    mapRef.current
-      .getSource("global-geofence")
-      ?.setData(buildFeature(globalGeofence));
-  }, [globalGeofence, ready]);
-
-  /* ================= UPDATE UAVs ================= */
-  useEffect(() => {
-    if (!ready || !sourcesReadyRef.current || !mapRef.current) return;
-
-    uavs.forEach((uav) => {
-      mapRef.current
-        .getSource(`uav-geofence-${uav.id}`)
-        ?.setData(buildFeature(uavGeofences[uav.id]));
-    });
-  }, [uavGeofences, uavs, ready]);
-
-  /* ================= MAP CLICK → ADD ================= */
-  useEffect(() => {
-    if (!ready || !onAddPoint || !mapRef.current) return;
-
-    const map = mapRef.current;
-    const handler = (e) =>
-      onAddPoint({ lat: e.lngLat.lat, lng: e.lngLat.lng });
-
-    map.on("click", handler);
-
-    const canvas = map.getCanvas?.();
-    if (canvas) canvas.style.cursor = "crosshair";
-
-    return () => {
-      try {
-        map.off("click", handler);
-        const canvas = map.getCanvas?.();
-        if (canvas) canvas.style.cursor = "";
-      } catch {}
-    };
-  }, [ready, onAddPoint]);
-
-  /* ================= CASUALTY MARKERS ================= */
-  useEffect(() => {
-    if (!ready || !mapRef.current) return;
+    const map = mapRefInstance.current;
 
     casualties.forEach((c) => {
-      if (markersRef.current[c.id]) return;
+      if (markers.current[c.id]) return;
 
       const el = document.createElement("div");
       el.className = `casualty-marker triage-${c.triage}`;
       el.style.setProperty("--idColor", c.idColor);
 
       el.innerHTML = `
-        <div class="marker-body">
-          <div class="waves">
-            <span class="wave"></span>
-            <span class="wave"></span>
-          </div>
-          <div class="dot">${c.id.replace("C", "")}</div>
-          <div class="focus-arrows">
-            <span class="arrow up"></span>
-            <span class="arrow right"></span>
-            <span class="arrow down"></span>
-            <span class="arrow left"></span>
-          </div>
+        <div class="waves">
+          <span class="wave"></span>
+          <span class="wave"></span>
+        </div>
+        <div class="dot">${c.id.replace("C", "")}</div>
+        <div class="focus-arrows">
+          <span class="arrow up"></span>
+          <span class="arrow right"></span>
+          <span class="arrow down"></span>
+          <span class="arrow left"></span>
         </div>
       `;
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([c.lng, c.lat])
-        .addTo(mapRef.current);
+        .addTo(map);
 
-      markersRef.current[c.id] = { el, marker };
+      markers.current[c.id] = { marker, el };
     });
-  }, [casualties, ready]);
+  }, [casualties, mapReady]);
 
-  /* ================= FILTER + FOCUS ================= */
+  /* =========================
+     FILTER + FOCUS
+  ========================= */
+
   useEffect(() => {
-    if (!ready) return;
+    if (!mapReady) return;
 
-    Object.entries(markersRef.current).forEach(([id, { el }]) => {
-      el.classList.remove("hidden", "focused");
+    const map = mapRefInstance.current;
 
-      const c = casualties.find((x) => x.id === id);
-      if (!c) return;
+    Object.entries(markers.current).forEach(([id, { el }]) => {
+      el.classList.remove("focused", "hidden");
 
-      if (triageFilter !== "all" && c.triage !== triageFilter)
+      const casualty = casualties.find((c) => c.id === id);
+      if (!casualty) return;
+
+      if (triageFilter !== "all" && casualty.triage !== triageFilter) {
         el.classList.add("hidden");
+        return;
+      }
 
-      if (focusedId && focusedId !== id)
+      if (focusedId && id !== focusedId) {
         el.classList.add("hidden");
+      }
 
-      if (focusedId === id)
+      if (focusedId === id) {
         el.classList.add("focused");
+      }
     });
-  }, [triageFilter, focusedId, casualties, ready]);
-
-  /* ================= CAMERA FOCUS ================= */
-  useEffect(() => {
-    if (!ready || !mapRef.current) return;
 
     if (!focusedId) {
-      mapRef.current.flyTo({
+      map.flyTo({
         center: [77.1175, 28.7488],
         zoom: 16,
         speed: 1.1,
@@ -194,77 +123,33 @@ export default function CasualtyMap({
       return;
     }
 
-    const c = casualties.find((x) => x.id === focusedId);
+    const c = casualties.find((c) => c.id === focusedId);
     if (!c) return;
 
-    mapRef.current.flyTo({
+    map.flyTo({
       center: [c.lng, c.lat],
       zoom: 19,
       speed: 0.9,
       curve: 1.3,
       essential: true,
     });
-  }, [focusedId, casualties, ready]);
+  }, [focusedId, triageFilter, casualties, mapReady]);
+
+  /* =========================
+     RENDER
+  ========================= */
 
   return (
     <>
-      <div ref={containerRef} className="map-container" />
-      {ready && (
+      <div ref={mapRef} className="map-container" />
+
+      {mapReady && uavs.length > 0 && (
         <UavLayer
-          map={mapRef.current}
+          map={mapRefInstance.current}
           uavs={uavs}
           focusedUavId={focusedUavId}
         />
       )}
     </>
   );
-}
-
-/* ================= HELPERS ================= */
-
-function emptyFeature() {
-  return { type: "FeatureCollection", features: [] };
-}
-
-function buildFeature(points = []) {
-  if (!points || points.length < 2) return emptyFeature();
-
-  const closed = points.length >= 3 ? [...points, points[0]] : points;
-
-  return {
-    type: "Feature",
-    geometry: {
-      type: points.length >= 3 ? "Polygon" : "LineString",
-      coordinates:
-        points.length >= 3
-          ? [closed.map((p) => [p.lng, p.lat])]
-          : closed.map((p) => [p.lng, p.lat]),
-    },
-  };
-}
-
-function addFenceLayers(map, id, color) {
-  if (!map.getLayer(`${id}-fill`)) {
-    map.addLayer({
-      id: `${id}-fill`,
-      type: "fill",
-      source: id,
-      paint: {
-        "fill-color": ["literal", color],
-        "fill-opacity": 0.25,
-      },
-    });
-  }
-
-  if (!map.getLayer(`${id}-line`)) {
-    map.addLayer({
-      id: `${id}-line`,
-      type: "line",
-      source: id,
-      paint: {
-        "line-color": ["literal", color],
-        "line-width": 2,
-      },
-    });
-  }
 }

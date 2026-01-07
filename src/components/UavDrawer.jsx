@@ -1,5 +1,3 @@
-// src/components/UavDrawer.jsx
-
 import { useState } from "react";
 import "./UavDrawer.css";
 
@@ -9,8 +7,6 @@ export default function UavDrawer({
   setCollapsed,
   focusedUavId,
   setFocusedUavId,
-  lockedUavId,
-  setLockedUavId,
 }) {
   const [confirmedId, setConfirmedId] = useState(null);
 
@@ -31,52 +27,34 @@ export default function UavDrawer({
 
       {/* LIST */}
       <div className="uav-list">
-        {uavs.map((uav) => {
-          const isLocked = lockedUavId === uav.id;
+        {uavs.map((uav) => (
+          <div
+            key={uav.id}
+            className={`uav-item
+              ${focusedUavId === uav.id ? "focused" : ""}
+              ${confirmedId === uav.id ? "confirmed" : ""}
+            `}
+            style={{ "--uavColor": uav.idColor }}
+            onMouseEnter={() => setFocusedUavId(uav.id)}
+            onMouseLeave={() => setFocusedUavId(null)}
+          >
+            {/* FULL ENERGY FILL */}
+            <span className="uav-energy-fill" />
 
-          return (
-            <div
-              key={uav.id}
-              className={`uav-item
-                ${focusedUavId === uav.id ? "focused" : ""}
-                ${confirmedId === uav.id ? "confirmed" : ""}
-                ${isLocked ? "locked" : ""}
-              `}
-              style={{ "--uavColor": uav.idColor }}
-              onMouseEnter={() => {
-                if (!lockedUavId) setFocusedUavId(uav.id);
-              }}
-              onMouseLeave={() => {
-                if (!lockedUavId) setFocusedUavId(null);
-              }}
-              onClick={() =>
-                setLockedUavId(
-                  isLocked ? null : uav.id
-                )
-              }
-            >
-              <span className="uav-energy-fill" />
-
-              <div className="uav-header">
-                <span className="uav-id">{uav.id}</span>
-                <span className="uav-dot" />
-              </div>
-
-              {/* ORIGINAL CONTROLS — UNCHANGED */}
-              <div className="uav-controls">
-                <button onClick={() => triggerConfirm(uav.id)}>
-                  ARM
-                </button>
-                <button onClick={() => triggerConfirm(uav.id)}>
-                  RTL
-                </button>
-                <button onClick={() => triggerConfirm(uav.id)}>
-                  LAND
-                </button>
-              </div>
+            {/* HEADER */}
+            <div className="uav-header">
+              <span className="uav-id">{uav.id}</span>
+              <span className="uav-dot" />
             </div>
-          );
-        })}
+
+            {/* CONTROLS */}
+            <div className="uav-controls">
+              <button onClick={() => triggerConfirm(uav.id)}>ARM</button>
+              <button onClick={() => triggerConfirm(uav.id)}>RTL</button>
+              <button onClick={() => triggerConfirm(uav.id)}>LAND</button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

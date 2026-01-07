@@ -1,72 +1,59 @@
-import { useState } from "react";
+// src/pages/CasualtyPage.jsx
 
+import { useState } from "react";
 import casualties from "../data/casualty.json";
 import uavs from "../data/uavs.json";
 
 import CasualtyMap from "../components/CasualtyMap";
 import UavDrawer from "../components/UavDrawer";
-import ControlPanel from "../components/ControlPanel";
 
 import "./CasualtyPage.css";
 
-export default function CasualtyPage({
-  globalGeofence,
-  setGlobalGeofence,
-}) {
+export default function CasualtyPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [triageFilter, setTriageFilter] = useState("all");
   const [focusedId, setFocusedId] = useState(null);
 
   const [uavCollapsed, setUavCollapsed] = useState(false);
-  const [hoveredUavId, setHoveredUavId] = useState(null);
-  const [lockedUavId, setLockedUavId] = useState(null);
-
-  const hoveredUav = uavs.find((u) => u.id === hoveredUavId) || null;
-  const lockedUav = uavs.find((u) => u.id === lockedUavId) || null;
-  const activeUav = lockedUav || hoveredUav;
-
-  const clearUavSelection = () => {
-    setLockedUavId(null);
-    setHoveredUavId(null);
-  };
-
-  const [uavGeofences, setUavGeofences] = useState({});
-
-  const applyUavGeofence = (uavId, points) => {
-    setUavGeofences((prev) => ({ ...prev, [uavId]: points }));
-  };
+  const [focusedUavId, setFocusedUavId] = useState(null);
 
   return (
     <div className="casualty-page">
+
+      {/* ================= MAP LAYER ================= */}
       <div className="map-layer">
         <CasualtyMap
           casualties={casualties}
-          triageFilter={triageFilter}
           focusedId={focusedId}
+          triageFilter={triageFilter}
           uavs={uavs}
-          focusedUavId={activeUav?.id || null}
-          globalGeofence={globalGeofence}
-          uavGeofences={uavGeofences}
+          focusedUavId={focusedUavId}
         />
       </div>
 
+      {/* ================= UI LAYER ================= */}
       <div className="ui-layer">
+
+        {/* UAV DRAWER */}
         <UavDrawer
           uavs={uavs}
           collapsed={uavCollapsed}
           setCollapsed={setUavCollapsed}
-          focusedUavId={hoveredUavId}
-          setFocusedUavId={setHoveredUavId}
-          lockedUavId={lockedUavId}
-          setLockedUavId={setLockedUavId}
+          focusedUavId={focusedUavId}
+          setFocusedUavId={setFocusedUavId}
         />
 
+        {/* CASUALTY UI */}
         <div className={`right-ui ${collapsed ? "collapsed" : ""}`}>
+
+          {/* FILTERS */}
           <div className="triage-filters">
             {["red", "yellow", "green", "black", "all"].map((t) => (
               <button
                 key={t}
-                className={`filter-btn ${triageFilter === t ? "active" : ""}`}
+                className={`filter-btn ${t} ${
+                  triageFilter === t ? "active" : ""
+                }`}
                 onClick={() => setTriageFilter(t)}
               >
                 {t.toUpperCase()}
@@ -74,6 +61,7 @@ export default function CasualtyPage({
             ))}
           </div>
 
+          {/* DRAWER */}
           <div className="drawer">
             <button
               className="drawer-toggle"
@@ -82,11 +70,11 @@ export default function CasualtyPage({
               {collapsed ? "‹" : "›"}
             </button>
 
+            {/* CASUALTY LIST */}
             <div className="casualty-list">
               {casualties
                 .filter(
-                  (c) =>
-                    triageFilter === "all" || c.triage === triageFilter
+                  (c) => triageFilter === "all" || c.triage === triageFilter
                 )
                 .map((c) => (
                   <button
@@ -102,16 +90,6 @@ export default function CasualtyPage({
                 ))}
             </div>
           </div>
-        </div>
-
-        <div className="bottom-safe-area">
-          <ControlPanel
-            uavs={uavs}
-            activeUav={activeUav}
-            onClearSelection={clearUavSelection}
-            onApplyGlobalGeofence={setGlobalGeofence}
-            onApplyUavGeofence={applyUavGeofence}
-          />
         </div>
       </div>
     </div>

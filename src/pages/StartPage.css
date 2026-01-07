@@ -1,43 +1,16 @@
-.start-shell {
+.start-container {
   width: 100vw;
   height: 100vh;
-  display: flex;
   background: #000;
-  overflow: hidden;
-
-  justify-content: center;
-  align-items: center;
-}
-
-.start-container {
-  width: 420px;
-  max-width: 90vw;
+  color: #e6e6e6;
 
   display: flex;
   flex-direction: column;
-  align-items: center;      /* 🔥 KEY FIX */
+  align-items: center;
   justify-content: center;
 
+  text-align: center;
   gap: 16px;
-  text-align: center;       /* 🔥 KEY FIX */
-
-  color: #e6e6e6;
-  transition: transform 0.4s ease;
-}
-
-.start-shell.geofencing {
-  justify-content: flex-start;
-  align-items: stretch;
-}
-
-.start-shell.geofencing .start-container {
-  transform: translateX(6vw);
-}
-
-
-.logo {
-  width: 220px;
-  opacity: 0.9;
 }
 
 .status-panel {
@@ -49,6 +22,10 @@
   margin-right: 6px;
 }
 
+.value {
+  font-weight: 600;
+}
+
 .value.open {
   color: #4ade80;
 }
@@ -57,66 +34,42 @@
   color: #ef4444;
 }
 
-.enter-btn,
-.geofence-btn {
-  width: 220px;
-  padding: 12px;
+.enter-btn {
+  margin-top: 20px;
+  padding: 14px 36px;
+  font-size: 16px;
   background: #0a1f44;
-  border: 1px solid #1e3a8a;
   color: #fff;
+  border: 1px solid #1e3a8a;
   cursor: pointer;
 }
 
 .enter-btn:disabled {
-  opacity: 0.4;
+  background: #111;
+  color: #555;
+  border-color: #222;
   cursor: not-allowed;
 }
 
-.geofence-panel {
-  flex: 1;                     /* 🔥 fill remaining space */
-  height: 100%;
-  background: #020617;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid #1e293b;
-
-  margin-left: 420px;          /* 🔥 push map right */
-}
-
-
-.geofence-header {
-  height: 52px;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #1e293b;
-  color: #e5e7eb;
-}
-
-.geo-actions button {
-  margin-left: 8px;
-  padding: 6px 10px;
-  background: #0a1f44;
-  border: 1px solid #1e3a8a;
-  color: #fff;
-  cursor: pointer;
-}
-
-.geo-actions .danger {
-  border-color: #7f1d1d;
-  background: #3f0d0d;
-}
-
-.geofence-map {
-  flex: 1;
-  position: relative;
-}
-
-.geofence-footer {
-  height: 36px;
+.hint {
   font-size: 12px;
-  padding: 8px 12px;
-  color: #9ca3af;
-  border-top: 1px solid #1e293b;
+  color: #666;
 }
+
+.logo {
+  width: 220px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+.enter-btn.override {
+  background: #4b0a0a;
+  border-color: #ff4d4d;
+  color: #fff;
+}
+
+.override-hint {
+  color: #ff5555;
+  font-size: 12px;
+}
+
